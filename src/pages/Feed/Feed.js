@@ -41,17 +41,12 @@ class Feed extends Component {
 
     this.loadPosts();
     const socket = openSocket("http://localhost:8080");
-    //we are listening to the 'posts' event, which we named "posts" on the back-end
     socket.on("posts", (data) => {
-      //here, we extract the data
-      //"data.action" is a key we added to our data in the back-end which is an object
       if (data.action === "create") {
         this.addPost(data.post);
       } else if (data.action === "update") {
         this.updatedPost(data.post);
       } else if (data.action === "delete") {
-        //NOTE that deletion is done by the REST_API, this just reloads the post
-        //with the purpose of getting updated data
         this.loadPosts();
       }
     });
@@ -100,7 +95,6 @@ class Feed extends Component {
     }
     fetch("http://localhost:8080/feed/posts?page=" + page, {
       headers: {
-        //adding 'Bearer' is just a convention for token and is optional
         Authorization: "Bearer " + this.props.token,
       },
     })
@@ -227,7 +221,6 @@ class Feed extends Component {
     fetch("http://localhost:8080/feed/post/" + postId, {
       method: "DELETE",
       headers: {
-        //adding 'Bearer' is just a convention for token and is optional
         Authorization: "Bearer " + this.props.token,
       },
     })
@@ -240,10 +233,6 @@ class Feed extends Component {
       .then((resData) => {
         console.log(resData);
         this.loadPosts();
-        // this.setState((prevState) => {
-        //   const updatedPosts = prevState.posts.filter((p) => p._id !== postId);
-        //   return { posts: updatedPosts, postsLoading: false };
-        // });
       })
       .catch((err) => {
         console.log(err);
